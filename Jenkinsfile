@@ -22,7 +22,7 @@ pipeline {
             steps {
                 echo 'Deploying application...'
                 bat '''
-                mkdir ${WORKSPACE}\python-app-deploy
+                mkdir ${WORKSPACE}\\python-app-deploy
                 copy ${WORKSPACE}\app.py ${WORKSPACE}\python-app-deploy\
                 '''
             }
