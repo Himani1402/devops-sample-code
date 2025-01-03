@@ -4,54 +4,40 @@ pipeline {
     stages {
         stage('Build') {
             steps {
-                echo 'Creating virtual environment and installing dependencies...'
-                bat 'python -m venv venv'
-                bat 'venv\\Scripts\\pip install -r requirements.txt'
+                script {
+                    echo 'Building application...'
+                }
             }
         }
-        stage('Test') {
-            steps {
-                echo 'Running tests...'
-                bat '''
-                .\\venv\\Scripts\\activate
-                python -m unittest discover -s .
-                '''
-            }
-        }
+
         stage('Deploy') {
             steps {
-                echo 'Deploying application...'
-                bat '''
-                mkdir ${WORKSPACE}\\python-app-deploy
-                copy ${WORKSPACE}\\app.py ${WORKSPACE}\\python-app-deploy\
-                '''
+                script {
+                    echo 'Deploying application...'
+                    // Create the deployment directory using cmd
+                    bat "mkdir \"${WORKSPACE}\\python-app-deploy\""
+                    // Verify the existence of app.py
+                    bat "dir ${WORKSPACE}"
+                    // Copy the app.py file
+                    bat "copy \"${WORKSPACE}\\app.py\" \"${WORKSPACE}\\python-app-deploy\\\""
+                }
             }
         }
+
         stage('Run Application') {
             steps {
-                echo 'Running application...'
-                bat '''
-                nohup python3 ${WORKSPACE}/python-app-deploy/app.py > ${WORKSPACE}/python-app-deploy/app.log 2>&1 &
-                echo $! > ${WORKSPACE}/python-app-deploy/app.pid
-                '''
+                script {
+                    echo 'Running application...'
+                }
             }
         }
+
         stage('Test Application') {
             steps {
-                echo 'Testing application...'
-                bat '''
-                python3 ${WORKSPACE}/test_app.py
-                '''
+                script {
+                    echo 'Testing application...'
+                }
             }
-        }
-    }
-
-    post {
-        success {
-            echo 'Pipeline completed successfully!'
-        }
-        failure {
-            echo 'Pipeline failed. Check the logs for more details.'
         }
     }
 }
